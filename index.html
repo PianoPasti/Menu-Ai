@@ -31,6 +31,12 @@
   textarea { width: 100%; border: 1.5px solid #e2ddd4; border-radius: 12px; padding: 12px; font-size: 14px; font-family: 'DM Sans', sans-serif; resize: none; background: #faf9f5; outline: none; }
   .btn-main { width: 100%; padding: 16px; background: #3a6b2f; color: #e8f5e0; border: none; border-radius: 14px; font-size: 16px; font-family: 'Playfair Display', serif; cursor: pointer; margin-top: 4px; }
   .btn-main:disabled { background: #aaa; cursor: not-allowed; }
+  .counter { text-align: center; font-size: 13px; color: #7a8c72; margin-bottom: 10px; }
+  .counter span { font-weight: 500; color: #3a6b2f; }
+  .paywall { background: #fff; border-radius: 20px; padding: 2rem 1.5rem; text-align: center; border: 1px solid #e2ddd4; }
+  .paywall h2 { font-family: 'Playfair Display', serif; font-size: 22px; color: #1e3a18; margin-bottom: 8px; }
+  .paywall p { font-size: 14px; color: #7a8c72; margin-bottom: 1.5rem; line-height: 1.6; }
+  .btn-upgrade { width: 100%; padding: 16px; background: #3a6b2f; color: #e8f5e0; border: none; border-radius: 14px; font-size: 16px; font-family: 'Playfair Display', serif; cursor: pointer; text-decoration: none; display: block; }
   .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
   .stat { background: #fff; border-radius: 14px; padding: 1rem; text-align: center; border: 1px solid #e2ddd4; }
   .stat-val { font-size: 22px; font-weight: 600; color: #3a6b2f; font-family: 'Playfair Display', serif; }
@@ -71,6 +77,7 @@
       <div class="feat"><i class="ti ti-shopping-cart"></i><div class="feat-lbl">Lista spesa</div></div>
       <div class="feat"><i class="ti ti-heart"></i><div class="feat-lbl">Personalizzato</div></div>
     </div>
+    <div class="counter">Menu gratuiti rimasti: <span id="counter-val">3</span> / 3</div>
     <div class="card">
       <div class="card-label">Obiettivo</div>
       <div class="chips" id="ob">
@@ -104,6 +111,17 @@
     <div class="divider"></div>
     <button class="btn-main" onclick="genera()" id="btn">Genera il mio menu</button>
   </div>
+
+  <div id="paywall" class="hidden">
+    <div class="paywall">
+      <i class="ti ti-lock" style="font-size:40px;color:#3a6b2f;margin-bottom:1rem;display:block;"></i>
+      <h2>Hai usato i 3 menu gratuiti</h2>
+      <p>Continua a pianificare i tuoi pasti con menu illimitati, lista spesa e personalizzazione avanzata.</p>
+      <a href="https://buy.stripe.com/test_3cI28k8K9egw9bGdOlcjS00" class="btn-upgrade">Abbonati per 5€/mese</a>
+      <p style="font-size:12px;color:#bbb;margin-top:12px;">Annulla quando vuoi</p>
+    </div>
+  </div>
+
   <div id="result" class="hidden">
     <div class="stats">
       <div class="stat"><div class="stat-val" id="skcal">-</div><div class="stat-lbl">kcal/giorno</div></div>
@@ -116,12 +134,24 @@
     </div>
     <div class="card" id="tab-menu"></div>
     <div class="card hidden" id="tab-spesa"></div>
-    <button class="btn-reset" onclick="reset()">Ricomincia</button>
+    <button class="btn-reset" onclick="reset()">Genera un altro menu</button>
   </div>
 </div>
 <script>
 var persone = 2;
 var scelte = { ob: '', di: '' };
+var STRIPE_LINK = 'https://buy.stripe.com/test_3cI28k8K9egw9bGdOlcjS00';
+
+function getUsati() {
+  return parseInt(localStorage.getItem('menuUsati') || '0');
+}
+
+function aggiornaCounter() {
+  var rimasti = Math.max(0, 3 - getUsati());
+  document.getElementById('counter-val').textContent = rimasti;
+}
+
+aggiornaCounter();
 
 function sel(el, g) {
   document.querySelectorAll('#' + g + ' .chip').forEach(function(c) { c.classList.remove('sel'); });
@@ -142,6 +172,13 @@ function showTab(name, el) {
 }
 
 function genera() {
+  var usati = getUsati();
+  if (usati >= 3) {
+    document.getElementById('setup').classList.add('hidden');
+    document.getElementById('paywall').classList.remove('hidden');
+    return;
+  }
+
   var ob = scelte.ob || 'mangiare sano';
   var di = scelte.di || 'onnivoro';
   var frigo = document.getElementById('frigo').value.trim();
@@ -163,6 +200,8 @@ function genera() {
   .then(function(data) {
     var text = data.content.map(function(b) { return b.text || ''; }).join('');
     var menu = JSON.parse(text.replace(/```json|```/g, '').trim());
+    localStorage.setItem('menuUsati', usati + 1);
+    aggiornaCounter();
     document.getElementById('skcal').textContent = Math.round(menu.kcal_giorno);
     document.getElementById('sspesa').textContent = 'EU' + Math.round(menu.spesa_euro);
     var html = '';
@@ -181,7 +220,7 @@ function genera() {
     btn.disabled = false;
     btn.textContent = 'Genera il mio menu';
   })
-  .catch(function(err) {
+  .catch(function() {
     document.getElementById('tab-menu').innerHTML = '<p style="color:#c00;padding:1rem;">Errore. Riprova.</p>';
     btn.disabled = false;
     btn.textContent = 'Genera il mio menu';
@@ -195,6 +234,12 @@ function strike(cb, i) {
 }
 
 function reset() {
+  var usati = getUsati();
+  if (usati >= 3) {
+    document.getElementById('result').classList.add('hidden');
+    document.getElementById('paywall').classList.remove('hidden');
+    return;
+  }
   document.getElementById('setup').classList.remove('hidden');
   document.getElementById('result').classList.add('hidden');
 }
