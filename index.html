@@ -27,4 +27,178 @@
   .chip.sel { background: #3a6b2f; color: #e8f5e0; border-color: #3a6b2f; }
   .stepper { display: flex; align-items: center; gap: 16px; }
   .step-btn { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid #d8d3c8; background: transparent; font-size: 20px; cursor: pointer; font-family: 'DM Sans', sans-serif; color: #3a6b2f; }
-  .step-val { font-size: 22px; font-weight: 500; min-width: 28px; text-align: center; font-family: 'Playfair
+  .step-val { font-size: 22px; font-weight: 500; min-width: 28px; text-align: center; font-family: 'Playfair Display', serif; color: #1e3a18; }
+  textarea { width: 100%; border: 1.5px solid #e2ddd4; border-radius: 12px; padding: 12px; font-size: 14px; font-family: 'DM Sans', sans-serif; resize: none; background: #faf9f5; outline: none; }
+  .btn-main { width: 100%; padding: 16px; background: #3a6b2f; color: #e8f5e0; border: none; border-radius: 14px; font-size: 16px; font-family: 'Playfair Display', serif; cursor: pointer; margin-top: 4px; }
+  .btn-main:disabled { background: #aaa; cursor: not-allowed; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+  .stat { background: #fff; border-radius: 14px; padding: 1rem; text-align: center; border: 1px solid #e2ddd4; }
+  .stat-val { font-size: 22px; font-weight: 600; color: #3a6b2f; font-family: 'Playfair Display', serif; }
+  .stat-lbl { font-size: 11px; color: #9a9688; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+  .tab { flex: 1; padding: 10px; border: 1.5px solid #d8d3c8; border-radius: 12px; background: transparent; font-size: 14px; cursor: pointer; font-family: 'DM Sans', sans-serif; color: #4a4a3a; }
+  .tab.active { background: #3a6b2f; color: #e8f5e0; border-color: #3a6b2f; }
+  .day { border-bottom: 1px solid #f0ebe0; padding: 1rem 0; }
+  .day:last-child { border-bottom: none; }
+  .day-name { font-family: 'Playfair Display', serif; font-size: 16px; color: #3a6b2f; margin-bottom: 8px; }
+  .meal { display: grid; grid-template-columns: 90px 1fr; gap: 4px; margin-bottom: 6px; font-size: 14px; }
+  .meal-type { color: #9a9688; font-size: 12px; padding-top: 1px; }
+  .spesa-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid #f0ebe0; font-size: 14px; }
+  .spesa-item:last-child { border-bottom: none; }
+  .spesa-item input { width: 18px; height: 18px; accent-color: #3a6b2f; }
+  .loading { text-align: center; padding: 2rem; color: #7a8c72; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #3a6b2f; margin: 0 3px; animation: b 1.2s infinite; }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes b { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-8px)} }
+  .btn-reset { width: 100%; padding: 12px; background: transparent; border: 1.5px solid #d8d3c8; border-radius: 12px; font-size: 14px; font-family: 'DM Sans', sans-serif; cursor: pointer; color: #7a8c72; margin-top: 8px; }
+  .hidden { display: none; }
+  .divider { height: 1px; background: #e2ddd4; margin: 4px 0 12px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="logo-icon"><i class="ti ti-salad"></i></div>
+    <h1>MenuAI</h1>
+  </div>
+  <p class="tagline">Il tuo pianificatore pasti settimanale</p>
+</header>
+
+<div class="wrap">
+  <div id="setup">
+    <div class="feature-row">
+      <div class="feat"><i class="ti ti-sparkles"></i><div class="feat-lbl">Generato dall'AI</div></div>
+      <div class="feat"><i class="ti ti-shopping-cart"></i><div class="feat-lbl">Lista spesa</div></div>
+      <div class="feat"><i class="ti ti-heart"></i><div class="feat-lbl">Personalizzato</div></div>
+    </div>
+    <div class="card">
+      <div class="card-label">Obiettivo</div>
+      <div class="chips" id="ob">
+        <button class="chip" onclick="sel(this,'ob')">Dimagrire</button>
+        <button class="chip" onclick="sel(this,'ob')">Mangiare sano</button>
+        <button class="chip" onclick="sel(this,'ob')">Aumentare massa</button>
+        <button class="chip" onclick="sel(this,'ob')">Risparmiare</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">Dieta</div>
+      <div class="chips" id="di">
+        <button class="chip" onclick="sel(this,'di')">Onnivoro</button>
+        <button class="chip" onclick="sel(this,'di')">Vegetariano</button>
+        <button class="chip" onclick="sel(this,'di')">Vegano</button>
+        <button class="chip" onclick="sel(this,'di')">Senza glutine</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">Persone in famiglia</div>
+      <div class="stepper">
+        <button class="step-btn" onclick="cp(-1)">−</button>
+        <span class="step-val" id="pv">2</span>
+        <button class="step-btn" onclick="cp(1)">+</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">Cosa hai in frigo? (opzionale)</div>
+      <textarea id="frigo" rows="2" placeholder="es. pollo, pasta, pomodori..."></textarea>
+    </div>
+    <div class="divider"></div>
+    <button class="btn-main" onclick="genera()" id="btn">Genera il mio menu</button>
+  </div>
+
+  <div id="result" class="hidden">
+    <div class="stats">
+      <div class="stat"><div class="stat-val" id="skcal">—</div><div class="stat-lbl">kcal/giorno</div></div>
+      <div class="stat"><div class="stat-val" id="sspesa">—</div><div class="stat-lbl">spesa est.</div></div>
+      <div class="stat"><div class="stat-val">7</div><div class="stat-lbl">ricette</div></div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('menu',this)">Menu settimana</button>
+      <button class="tab" onclick="showTab('spesa',this)">Lista spesa</button>
+    </div>
+    <div class="card" id="tab-menu"></div>
+    <div class="card hidden" id="tab-spesa"></div>
+    <button class="btn-reset" onclick="reset()">Ricomincia</button>
+  </div>
+</div>
+
+<script>
+let persone = 2;
+let scelte = { ob: '', di: '' };
+
+function sel(el, g) {
+  document.querySelectorAll('#' + g + ' .chip').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  scelte[g] = el.textContent;
+}
+
+function cp(d) {
+  persone = Math.max(1, Math.min(8, persone + d));
+  document.getElementById('pv').textContent = persone;
+}
+
+function showTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-menu').classList.toggle('hidden', name !== 'menu');
+  document.getElementById('tab-spesa').classList.toggle('hidden', name !== 'spesa');
+}
+
+async function genera() {
+  const ob = scelte.ob || 'mangiare sano';
+  const di = scelte.di || 'onnivoro';
+  const frigo = document.getElementById('frigo').value.trim();
+  const btn = document.getElementById('btn');
+  btn.disabled = true;
+  btn.textContent = 'Generazione in corso...';
+  document.getElementById('setup').classList.add('hidden');
+  document.getElementById('result').classList.remove('hidden');
+  document.getElementById('tab-menu').innerHTML = '<div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: `Crea un piano pasti settimanale per ${persone} persona/e, obiettivo: ${ob}, dieta: ${di}${frigo ? ', ingredienti disponibili: ' + frigo : ''}. Rispondi SOLO con JSON valido. Formato: {"kcal_giorno":1800,"spesa_euro":45,"giorni":[{"giorno":"Lunedì","colazione":"...","pranzo":"...","cena":"..."}],"lista_spesa":["voce1","voce2"]}` }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content.map(b => b.text || '').join('');
+    const menu = JSON.parse(text.replace(/```json|```/g, '').trim());
+    document.getElementById('skcal').textContent = Math.round(menu.kcal_giorno);
+    document.getElementById('sspesa').textContent = '€' + Math.round(menu.spesa_euro);
+    let html = '';
+    menu.giorni.forEach(g => {
+      html += `<div class="day"><div class="day-name">${g.giorno}</div>
+        <div class="meal"><span class="meal-type">Colazione</span><span>${g.colazione}</span></div>
+        <div class="meal"><span class="meal-type">Pranzo</span><span>${g.pranzo}</span></div>
+        <div class="meal"><span class="meal-type">Cena</span><span>${g.cena}</span></div></div>`;
+    });
+    document.getElementById('tab-menu').innerHTML = html;
+    let spesa = '';
+    menu.lista_spesa.forEach((item, i) => {
+      spesa += `<div class="spesa-item"><input type="checkbox" id="s${i}" onchange="strike(this,${i})"><label for="s${i}" id="sl${i}">${item}</label></div>`;
+    });
+    document.getElementById('tab-spesa').innerHTML = spesa;
+  } catch(e) {
+    document.getElementById('tab-menu').innerHTML = '<p style="color:#c00;padding:1rem;">Errore. Riprova.</p>';
+  }
+  btn.disabled = false;
+  btn.textContent = 'Genera il mio menu';
+}
+
+function strike(cb, i) {
+  const l = document.getElementById('sl' + i);
+  l.style.textDecoration = cb.checked ? 'line-through' : 'none';
+  l.style.color = cb.checked ? '#bbb' : '#1a1a1a';
+}
+
+function reset() {
+  document.getElementById('setup').classList.remove('hidden');
+  document.getElementById('result').classList.add('hidden');
+}
+</script>
+</body>
+</html>
