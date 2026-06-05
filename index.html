@@ -4,184 +4,27 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MenuAI — Pianificatore pasti</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: #f5f0e8; color: #1a1a1a; min-height: 100vh; }
-  header { padding: 2rem; text-align: center; border-bottom: 1px solid #ddd8cc; }
-  header h1 { font-family: 'Fraunces', serif; font-size: 2.5rem; color: #2d5a27; }
-  header p { color: #666; margin-top: 0.5rem; }
-  .container { max-width: 600px; margin: 0 auto; padding: 2rem 1rem; }
-  .card { background: white; border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; border: 1px solid #e8e2d8; }
-  label { font-size: 13px; color: #666; display: block; margin-bottom: 8px; font-weight: 500; }
+  body { font-family: 'DM Sans', sans-serif; background: #f0ede4; color: #1a1a1a; min-height: 100vh; }
+  header { text-align: center; padding: 2rem 1rem 1.5rem; }
+  .logo { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 6px; }
+  .logo-icon { width: 42px; height: 42px; background: #3a6b2f; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+  .logo-icon i { font-size: 22px; color: #c8e6b0; }
+  .logo h1 { font-family: 'Playfair Display', serif; font-size: 30px; color: #1e3a18; }
+  .tagline { font-size: 14px; color: #7a8c72; letter-spacing: 0.03em; }
+  .wrap { max-width: 580px; margin: 0 auto; padding: 0 1rem 3rem; }
+  .feature-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+  .feat { background: #fff; border-radius: 14px; padding: 14px 10px; text-align: center; border: 1px solid #e2ddd4; }
+  .feat i { font-size: 22px; color: #3a6b2f; display: block; margin-bottom: 6px; }
+  .feat-lbl { font-size: 11px; color: #7a8c72; font-weight: 500; }
+  .card { background: #fff; border-radius: 20px; padding: 1.25rem 1.5rem; margin-bottom: 12px; border: 1px solid #e2ddd4; }
+  .card-label { font-size: 11px; font-weight: 500; color: #9a9688; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip { padding: 8px 16px; border-radius: 20px; border: 1px solid #ddd; background: transparent; font-size: 14px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
-  .chip.sel { background: #2d5a27; color: white; border-color: #2d5a27; }
+  .chip { padding: 8px 16px; border-radius: 30px; border: 1.5px solid #d8d3c8; background: transparent; font-size: 13px; font-family: 'DM Sans', sans-serif; color: #4a4a3a; cursor: pointer; transition: all 0.2s; }
+  .chip.sel { background: #3a6b2f; color: #e8f5e0; border-color: #3a6b2f; }
   .stepper { display: flex; align-items: center; gap: 16px; }
-  .stepper button { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #ddd; background: transparent; font-size: 20px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
-  .stepper span { font-size: 20px; font-weight: 500; min-width: 24px; text-align: center; }
-  textarea { width: 100%; border: 1px solid #ddd; border-radius: 10px; padding: 12px; font-size: 14px; font-family: 'DM Sans', sans-serif; resize: none; background: #fafaf8; }
-  .btn-main { width: 100%; padding: 16px; background: #2d5a27; color: white; border: none; border-radius: 12px; font-size: 16px; font-family: 'Fraunces', serif; cursor: pointer; transition: background 0.2s; }
-  .btn-main:hover { background: #1e3d1a; }
-  .btn-main:disabled { background: #aaa; cursor: not-allowed; }
-  .tabs { display: flex; gap: 8px; margin-bottom: 1rem; }
-  .tab { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 10px; background: transparent; font-size: 14px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
-  .tab.active { background: #2d5a27; color: white; border-color: #2d5a27; }
-  .day { border-bottom: 1px solid #f0ebe0; padding: 1rem 0; }
-  .day:last-child { border-bottom: none; }
-  .day-name { font-family: 'Fraunces', serif; font-size: 15px; color: #2d5a27; margin-bottom: 8px; }
-  .meal { display: grid; grid-template-columns: 90px 1fr; gap: 4px; margin-bottom: 4px; font-size: 14px; }
-  .meal-type { color: #999; }
-  .spesa-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f0ebe0; font-size: 14px; }
-  .spesa-item:last-child { border-bottom: none; }
-  .spesa-item input { width: 18px; height: 18px; accent-color: #2d5a27; }
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1rem; }
-  .stat { background: white; border-radius: 12px; padding: 1rem; text-align: center; border: 1px solid #e8e2d8; }
-  .stat-val { font-size: 22px; font-weight: 600; color: #2d5a27; font-family: 'Fraunces', serif; }
-  .stat-lbl { font-size: 12px; color: #999; margin-top: 4px; }
-  .loading { text-align: center; padding: 2rem; color: #666; }
-  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #2d5a27; margin: 0 3px; animation: b 1.2s infinite; }
-  .dot:nth-child(2) { animation-delay: 0.2s; }
-  .dot:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes b { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-8px)} }
-  .hidden { display: none; }
-  .btn-reset { width: 100%; padding: 12px; background: transparent; border: 1px solid #ddd; border-radius: 12px; font-size: 14px; font-family: 'DM Sans', sans-serif; cursor: pointer; color: #666; margin-top: 8px; }
-</style>
-</head>
-<body>
-<header>
-  <h1>MenuAI</h1>
-  <p>Il tuo pianificatore pasti settimanale</p>
-</header>
-<div class="container">
-  <div id="setup">
-    <div class="card">
-      <label>Obiettivo</label>
-      <div class="chips" id="ob">
-        <button class="chip" onclick="sel(this,'ob')">Dimagrire</button>
-        <button class="chip" onclick="sel(this,'ob')">Mangiare sano</button>
-        <button class="chip" onclick="sel(this,'ob')">Aumentare massa</button>
-        <button class="chip" onclick="sel(this,'ob')">Risparmiare</button>
-      </div>
-    </div>
-    <div class="card">
-      <label>Dieta</label>
-      <div class="chips" id="di">
-        <button class="chip" onclick="sel(this,'di')">Onnivoro</button>
-        <button class="chip" onclick="sel(this,'di')">Vegetariano</button>
-        <button class="chip" onclick="sel(this,'di')">Vegano</button>
-        <button class="chip" onclick="sel(this,'di')">Senza glutine</button>
-      </div>
-    </div>
-    <div class="card">
-      <label>Persone in famiglia</label>
-      <div class="stepper">
-        <button onclick="cp(-1)">−</button>
-        <span id="pv">2</span>
-        <button onclick="cp(1)">+</button>
-      </div>
-    </div>
-    <div class="card">
-      <label>Cosa hai in frigo? (opzionale)</label>
-      <textarea id="frigo" rows="2" placeholder="es. pollo, pasta, pomodori..."></textarea>
-    </div>
-    <button class="btn-main" onclick="genera()" id="btn">Genera menu della settimana</button>
-  </div>
-
-  <div id="result" class="hidden">
-    <div class="stats">
-      <div class="stat"><div class="stat-val" id="skcal">—</div><div class="stat-lbl">kcal/giorno</div></div>
-      <div class="stat"><div class="stat-val" id="sspesa">—</div><div class="stat-lbl">spesa est.</div></div>
-      <div class="stat"><div class="stat-val">7</div><div class="stat-lbl">ricette</div></div>
-    </div>
-    <div class="tabs">
-      <button class="tab active" onclick="showTab('menu',this)">Menu</button>
-      <button class="tab" onclick="showTab('spesa',this)">Lista spesa</button>
-    </div>
-    <div class="card" id="tab-menu"></div>
-    <div class="card hidden" id="tab-spesa"></div>
-    <button class="btn-reset" onclick="reset()">Ricomincia</button>
-  </div>
-</div>
-
-<script>
-let persone = 2;
-let scelte = { ob: '', di: '' };
-
-function sel(el, g) {
-  document.querySelectorAll('#' + g + ' .chip').forEach(c => c.classList.remove('sel'));
-  el.classList.add('sel');
-  scelte[g] = el.textContent;
-}
-
-function cp(d) {
-  persone = Math.max(1, Math.min(8, persone + d));
-  document.getElementById('pv').textContent = persone;
-}
-
-function showTab(name, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('tab-menu').classList.toggle('hidden', name !== 'menu');
-  document.getElementById('tab-spesa').classList.toggle('hidden', name !== 'spesa');
-}
-
-async function genera() {
-  const ob = scelte.ob || 'mangiare sano';
-  const di = scelte.di || 'onnivoro';
-  const frigo = document.getElementById('frigo').value.trim();
-  const btn = document.getElementById('btn');
-  btn.disabled = true;
-  btn.textContent = 'Generazione in corso...';
-  document.getElementById('setup').classList.add('hidden');
-  document.getElementById('result').classList.remove('hidden');
-  document.getElementById('tab-menu').innerHTML = '<div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: `Crea un piano pasti settimanale per ${persone} persona/e, obiettivo: ${ob}, dieta: ${di}${frigo ? ', ingredienti disponibili: ' + frigo : ''}. Rispondi SOLO con JSON valido. Formato: {"kcal_giorno":1800,"spesa_euro":45,"giorni":[{"giorno":"Lunedì","colazione":"...","pranzo":"...","cena":"..."}],"lista_spesa":["voce1","voce2"]}` }]
-      })
-    });
-    const data = await res.json();
-    const text = data.content.map(b => b.text || '').join('');
-    const menu = JSON.parse(text.replace(/```json|```/g, '').trim());
-    document.getElementById('skcal').textContent = Math.round(menu.kcal_giorno);
-    document.getElementById('sspesa').textContent = '€' + Math.round(menu.spesa_euro);
-    let html = '';
-    menu.giorni.forEach(g => {
-      html += `<div class="day"><div class="day-name">${g.giorno}</div>
-        <div class="meal"><span class="meal-type">Colazione</span><span>${g.colazione}</span></div>
-        <div class="meal"><span class="meal-type">Pranzo</span><span>${g.pranzo}</span></div>
-        <div class="meal"><span class="meal-type">Cena</span><span>${g.cena}</span></div></div>`;
-    });
-    document.getElementById('tab-menu').innerHTML = html;
-    let spesa = '';
-    menu.lista_spesa.forEach((item, i) => {
-      spesa += `<div class="spesa-item"><input type="checkbox" id="s${i}" onchange="strike(this,${i})"><label for="s${i}" id="sl${i}">${item}</label></div>`;
-    });
-    document.getElementById('tab-spesa').innerHTML = spesa;
-  } catch(e) {
-    document.getElementById('tab-menu').innerHTML = '<p style="color:#c00;padding:1rem;">Errore. Riprova.</p>';
-  }
-  btn.disabled = false;
-  btn.textContent = 'Genera menu della settimana';
-}
-
-function strike(cb, i) {
-  const l = document.getElementById('sl' + i);
-  l.style.textDecoration = cb.checked ? 'line-through' : 'none';
-  l.style.color = cb.checked ? '#bbb' : '#1a1a1a';
-}
-
-function reset() {
-  document.getElementById('setup').classList.remove('hidden');
-  document.getElementById('result').classList.add('hidden');
-}
-</script>
-</body>
-</html>
+  .step-btn { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid #d8d3c8; background: transparent; font-size: 20px; cursor: pointer; font-family: 'DM Sans', sans-serif; color: #3a6b2f; }
+  .step-val { font-size: 22px; font-weight: 500; min-width: 28px; text-align: center; font-family: 'Playfair
