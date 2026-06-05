@@ -50,7 +50,7 @@
   .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #3a6b2f; margin: 0 3px; animation: b 1.2s infinite; }
   .dot:nth-child(2) { animation-delay: 0.2s; }
   .dot:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes b { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-8px)} }
+  @keyframes b { 0%,80%,100% { transform: translateY(0); } 40% { transform: translateY(-8px); } }
   .btn-reset { width: 100%; padding: 12px; background: transparent; border: 1.5px solid #d8d3c8; border-radius: 12px; font-size: 14px; font-family: 'DM Sans', sans-serif; cursor: pointer; color: #7a8c72; margin-top: 8px; }
   .hidden { display: none; }
   .divider { height: 1px; background: #e2ddd4; margin: 4px 0 12px; }
@@ -64,7 +64,6 @@
   </div>
   <p class="tagline">Il tuo pianificatore pasti settimanale</p>
 </header>
-
 <div class="wrap">
   <div id="setup">
     <div class="feature-row">
@@ -93,7 +92,7 @@
     <div class="card">
       <div class="card-label">Persone in famiglia</div>
       <div class="stepper">
-        <button class="step-btn" onclick="cp(-1)">−</button>
+        <button class="step-btn" onclick="cp(-1)">-</button>
         <span class="step-val" id="pv">2</span>
         <button class="step-btn" onclick="cp(1)">+</button>
       </div>
@@ -105,11 +104,10 @@
     <div class="divider"></div>
     <button class="btn-main" onclick="genera()" id="btn">Genera il mio menu</button>
   </div>
-
   <div id="result" class="hidden">
     <div class="stats">
-      <div class="stat"><div class="stat-val" id="skcal">—</div><div class="stat-lbl">kcal/giorno</div></div>
-      <div class="stat"><div class="stat-val" id="sspesa">—</div><div class="stat-lbl">spesa est.</div></div>
+      <div class="stat"><div class="stat-val" id="skcal">-</div><div class="stat-lbl">kcal/giorno</div></div>
+      <div class="stat"><div class="stat-val" id="sspesa">-</div><div class="stat-lbl">spesa est.</div></div>
       <div class="stat"><div class="stat-val">7</div><div class="stat-lbl">ricette</div></div>
     </div>
     <div class="tabs">
@@ -121,13 +119,12 @@
     <button class="btn-reset" onclick="reset()">Ricomincia</button>
   </div>
 </div>
-
 <script>
-let persone = 2;
-let scelte = { ob: '', di: '' };
+var persone = 2;
+var scelte = { ob: '', di: '' };
 
 function sel(el, g) {
-  document.querySelectorAll('#' + g + ' .chip').forEach(c => c.classList.remove('sel'));
+  document.querySelectorAll('#' + g + ' .chip').forEach(function(c) { c.classList.remove('sel'); });
   el.classList.add('sel');
   scelte[g] = el.textContent;
 }
@@ -138,59 +135,61 @@ function cp(d) {
 }
 
 function showTab(name, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
   el.classList.add('active');
   document.getElementById('tab-menu').classList.toggle('hidden', name !== 'menu');
   document.getElementById('tab-spesa').classList.toggle('hidden', name !== 'spesa');
 }
 
-async function genera() {
-  const ob = scelte.ob || 'mangiare sano';
-  const di = scelte.di || 'onnivoro';
-  const frigo = document.getElementById('frigo').value.trim();
-  const btn = document.getElementById('btn');
+function genera() {
+  var ob = scelte.ob || 'mangiare sano';
+  var di = scelte.di || 'onnivoro';
+  var frigo = document.getElementById('frigo').value.trim();
+  var btn = document.getElementById('btn');
   btn.disabled = true;
   btn.textContent = 'Generazione in corso...';
   document.getElementById('setup').classList.add('hidden');
   document.getElementById('result').classList.remove('hidden');
   document.getElementById('tab-menu').innerHTML = '<div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
-  try {
-   /.netlify/functions/menu
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: `Crea un piano pasti settimanale per ${persone} persona/e, obiettivo: ${ob}, dieta: ${di}${frigo ? ', ingredienti disponibili: ' + frigo : ''}. Rispondi SOLO con JSON valido. Formato: {"kcal_giorno":1800,"spesa_euro":45,"giorni":[{"giorno":"Lunedì","colazione":"...","pranzo":"...","cena":"..."}],"lista_spesa":["voce1","voce2"]}` }]
-      })
-    });
-    const data = await res.json();
-    const text = data.content.map(b => b.text || '').join('');
-    const menu = JSON.parse(text.replace(/```json|```/g, '').trim());
+
+  var prompt = 'Crea un piano pasti settimanale per ' + persone + ' persona/e, obiettivo: ' + ob + ', dieta: ' + di + (frigo ? ', ingredienti disponibili: ' + frigo : '') + '. Rispondi SOLO con JSON valido. Formato: {"kcal_giorno":1800,"spesa_euro":45,"giorni":[{"giorno":"Lunedi","colazione":"...","pranzo":"...","cena":"..."}],"lista_spesa":["voce1","voce2"]}';
+
+  fetch('/.netlify/functions/menu', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    var text = data.content.map(function(b) { return b.text || ''; }).join('');
+    var menu = JSON.parse(text.replace(/```json|```/g, '').trim());
     document.getElementById('skcal').textContent = Math.round(menu.kcal_giorno);
-    document.getElementById('sspesa').textContent = '€' + Math.round(menu.spesa_euro);
-    let html = '';
-    menu.giorni.forEach(g => {
-      html += `<div class="day"><div class="day-name">${g.giorno}</div>
-        <div class="meal"><span class="meal-type">Colazione</span><span>${g.colazione}</span></div>
-        <div class="meal"><span class="meal-type">Pranzo</span><span>${g.pranzo}</span></div>
-        <div class="meal"><span class="meal-type">Cena</span><span>${g.cena}</span></div></div>`;
+    document.getElementById('sspesa').textContent = 'EU' + Math.round(menu.spesa_euro);
+    var html = '';
+    menu.giorni.forEach(function(g) {
+      html += '<div class="day"><div class="day-name">' + g.giorno + '</div>';
+      html += '<div class="meal"><span class="meal-type">Colazione</span><span>' + g.colazione + '</span></div>';
+      html += '<div class="meal"><span class="meal-type">Pranzo</span><span>' + g.pranzo + '</span></div>';
+      html += '<div class="meal"><span class="meal-type">Cena</span><span>' + g.cena + '</span></div></div>';
     });
     document.getElementById('tab-menu').innerHTML = html;
-    let spesa = '';
-    menu.lista_spesa.forEach((item, i) => {
-      spesa += `<div class="spesa-item"><input type="checkbox" id="s${i}" onchange="strike(this,${i})"><label for="s${i}" id="sl${i}">${item}</label></div>`;
+    var spesa = '';
+    menu.lista_spesa.forEach(function(item, i) {
+      spesa += '<div class="spesa-item"><input type="checkbox" id="s' + i + '" onchange="strike(this,' + i + ')"><label for="s' + i + '" id="sl' + i + '">' + item + '</label></div>';
     });
     document.getElementById('tab-spesa').innerHTML = spesa;
-  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = 'Genera il mio menu';
+  })
+  .catch(function(err) {
     document.getElementById('tab-menu').innerHTML = '<p style="color:#c00;padding:1rem;">Errore. Riprova.</p>';
-  }
-  btn.disabled = false;
-  btn.textContent = 'Genera il mio menu';
+    btn.disabled = false;
+    btn.textContent = 'Genera il mio menu';
+  });
 }
 
 function strike(cb, i) {
-  const l = document.getElementById('sl' + i);
+  var l = document.getElementById('sl' + i);
   l.style.textDecoration = cb.checked ? 'line-through' : 'none';
   l.style.color = cb.checked ? '#bbb' : '#1a1a1a';
 }
