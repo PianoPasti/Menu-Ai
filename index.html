@@ -191,7 +191,7 @@ function genera() {
 
   var prompt = 'Crea un piano pasti settimanale per ' + persone + ' persona/e, obiettivo: ' + ob + ', dieta: ' + di + (frigo ? ', ingredienti disponibili: ' + frigo : '') + '. Rispondi SOLO con JSON valido. Formato: {"kcal_giorno":1800,"spesa_euro":45,"giorni":[{"giorno":"Lunedi","colazione":"...","pranzo":"...","cena":"..."}],"lista_spesa":["voce1","voce2"]}';
 
-  fetch('/.netlify/functions/menu', {
+  fetch('/api/menu', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] })
